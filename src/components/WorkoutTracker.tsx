@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Minus, Check, Timer, Weight } from "lucide-react";
+import { Plus, Minus, Check, Timer, Weight, RotateCcw } from "lucide-react";
 
 interface Exercise {
   id: string;
@@ -21,6 +21,7 @@ interface WorkoutSet {
 }
 
 export const WorkoutTracker = () => {
+  const [isKg, setIsKg] = useState(false);
   const [currentExercise, setCurrentExercise] = useState<Exercise>({
     id: "1",
     name: "Bench Press",
@@ -35,6 +36,14 @@ export const WorkoutTracker = () => {
 
   const completedSets = currentExercise.sets.filter(set => set.completed).length;
   const progress = (completedSets / currentExercise.targetSets) * 100;
+
+  const convertWeight = (weight: number) => {
+    return isKg ? Math.round(weight * 0.453592 * 10) / 10 : weight;
+  };
+
+  const getWeightIncrement = () => {
+    return isKg ? 2.5 : 5;
+  };
 
   const updateSet = (setId: string, field: 'weight' | 'reps', delta: number) => {
     setCurrentExercise(prev => ({
@@ -69,10 +78,21 @@ export const WorkoutTracker = () => {
               {completedSets} of {currentExercise.targetSets} sets completed
             </p>
           </div>
-          <Badge variant="secondary" className="text-sm">
-            <Timer className="h-4 w-4 mr-1" />
-            12:34
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsKg(!isKg)}
+              className="h-8"
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />
+              {isKg ? 'kg' : 'lbs'}
+            </Button>
+            <Badge variant="secondary" className="text-sm">
+              <Timer className="h-4 w-4 mr-1" />
+              12:34
+            </Badge>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -104,29 +124,30 @@ export const WorkoutTracker = () => {
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => updateSet(set.id, 'weight', -5)}
+                      onClick={() => updateSet(set.id, 'weight', -getWeightIncrement())}
                     >
                       <Minus className="h-3 w-3" />
                     </Button>
                     <Input
-                      value={set.weight}
+                      value={convertWeight(set.weight)}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
+                        const value = parseFloat(e.target.value) || 0;
+                        const convertedValue = isKg ? Math.round(value / 0.453592) : value;
                         setCurrentExercise(prev => ({
                           ...prev,
                           sets: prev.sets.map(s => 
-                            s.id === set.id ? { ...s, weight: value } : s
+                            s.id === set.id ? { ...s, weight: convertedValue } : s
                           )
                         }));
                       }}
                       className="w-16 text-center h-8"
                     />
-                    <span className="text-sm text-muted-foreground">lbs</span>
+                    <span className="text-sm text-muted-foreground">{isKg ? 'kg' : 'lbs'}</span>
                     <Button
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => updateSet(set.id, 'weight', 5)}
+                      onClick={() => updateSet(set.id, 'weight', getWeightIncrement())}
                     >
                       <Plus className="h-3 w-3" />
                     </Button>
