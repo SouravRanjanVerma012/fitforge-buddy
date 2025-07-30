@@ -1,73 +1,116 @@
-# Welcome to your Lovable project
+# FitBuddy
 
-## Project info
+Your AI-powered fitness companion for smart workout tracking, analytics, and community engagement.
 
-**URL**: https://lovable.dev/projects/d7eee666-a10d-4b21-89c0-7eeff676ea8d
+---
 
-## How can I edit this code?
+## 🚀 Setup & Development
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/d7eee666-a10d-4b21-89c0-7eeff676ea8d) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+1. **Clone the repo:**
+   ```sh
+   git clone https://github.com/your-org/fitbuddy.git
+   cd fitbuddy
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Start the dev server:**
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+4. **Run backend (if separate):**
+   - See backend/README.md for instructions.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🏗️ Build & Deployment
 
-**Use GitHub Codespaces**
+- **Build for production:**
+  ```sh
+  npm run build
+  ```
+- **Preview production build:**
+  ```sh
+  npm run preview
+  ```
+- **Deploy:**
+  - Use Vercel, Netlify, or your own server.
+  - See `.github/workflows/ci.yml` for CI/CD pipeline.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## ⚙️ Environment Variables
 
-This project is built with:
+- `VITE_API_URL` — Base URL for backend API
+- `VITE_SENTRY_DSN` — Sentry DSN for error monitoring
+- (Add more as needed)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 🔗 API Endpoints
 
-Simply open [Lovable](https://lovable.dev/projects/d7eee666-a10d-4b21-89c0-7eeff676ea8d) and click on Share -> Publish.
+- `/api/login` — User authentication
+- `/api/workouts` — Workout CRUD
+- `/api/leaderboard` — Leaderboard data
+- `/api/challenges` — Challenges data
+- `/api/friends` — Friends and requests
+- `/api/recommendation` — AI/ML recommendations
+- `/api/admin/stats` — Admin stats
+- `/api/feedback` — User feedback
+- (See `API.md` for full docs)
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 🧪 Testing
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Unit/Integration:**
+  ```sh
+  npm run test
+  ```
+- **E2E (Cypress):**
+  ```sh
+  npx cypress open
+  ```
+- **Accessibility Audit:**
+  ```sh
+  node scripts/a11y-audit.js
+  ```
+- **Performance Audit (Lighthouse):**
+  ```sh
+  bash scripts/lighthouse-audit.sh
+  ```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## 🛠️ CI/CD
+
+- Automated via GitHub Actions (`.github/workflows/ci.yml`)
+- Runs lint, test, e2e, build, and deploy steps
+
+---
+
+## 💬 Feedback & Help
+
+- Use the in-app Feedback button (bottom right)
+- Or email: support@fitbuddy.com
+- See the [Help & FAQ](/help) page
+
+---
+
+## 🤝 Contributing
+
+- Fork the repo and create a feature branch
+- Open a pull request with a clear description
+- Run all tests before submitting
+- See `CONTRIBUTING.md` for more
+
+---
+
+## 📖 API Documentation (Placeholder)
+
+See `API.md` for detailed API docs (to be completed).
+
+---
+
+**FitBuddy** © 2025. All rights reserved.
