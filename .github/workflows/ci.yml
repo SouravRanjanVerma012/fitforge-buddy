@@ -1,0 +1,32 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Lint
+        run: npm run lint || true
+      - name: Unit/Integration Tests (Jest)
+        run: npm run test -- --ci --coverage
+      - name: E2E Tests (Cypress)
+        uses: cypress-io/github-action@v5
+        with:
+          start: npm run dev
+          wait-on: 'http://localhost:5173'
+      - name: Build
+        run: npm run build
+      - name: Deploy (placeholder)
+        run: echo "Deploy step here (Vercel/Netlify/your server)" 
