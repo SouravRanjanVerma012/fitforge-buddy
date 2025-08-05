@@ -6,7 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./lib/auth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import DiagnosticInfo from "./components/DiagnosticInfo";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Macros from "./pages/Macros";
+import ActivityLog from "./pages/ActivityLog";
 import NotFound from "./pages/NotFound";
 import { useState, useEffect } from "react";
 
@@ -36,8 +42,39 @@ const App = () => {
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                {/* Protected Routes */}
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+                      <Navigation />
+                      <Index />
+                    </div>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/macros" element={
+                  <ProtectedRoute>
+                    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+                      <Navigation />
+                      <Macros />
+                    </div>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/activity" element={
+                  <ProtectedRoute>
+                    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+                      <Navigation />
+                      <ActivityLog />
+                    </div>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
