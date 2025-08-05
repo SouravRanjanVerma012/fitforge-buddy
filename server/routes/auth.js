@@ -8,6 +8,11 @@ const router = express.Router();
 // Register user
 router.post('/register', async (req, res) => {
   try {
+    // Check if database is connected
+    if (!req.dbConnected) {
+      return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+
     const { name, email, password } = req.body;
 
     // Check if user already exists
@@ -39,13 +44,18 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
 // Login user
 router.post('/login', async (req, res) => {
   try {
+    // Check if database is connected
+    if (!req.dbConnected) {
+      return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+
     const { email, password } = req.body;
 
     // Check if user exists
@@ -74,17 +84,22 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
 // Get current user
 router.get('/me', auth, async (req, res) => {
   try {
+    // Check if database is connected
+    if (!req.dbConnected) {
+      return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+
     res.json({ user: req.user.toJSON() });
   } catch (error) {
     console.error('Get user error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
