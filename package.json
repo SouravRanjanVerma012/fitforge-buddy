@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "jest",
     "start": "node server/server.js",
-    "start:backend": "node server/server.js"
+    "start:backend": "node server/server.js",
+    "vercel-build": "vite build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
