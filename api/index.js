@@ -21,8 +21,25 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Security middleware
-app.use(helmet());
+// Security middleware with less restrictive settings for static assets
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:"],
+      fontSrc: ["'self'", "https:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://your-app-name.vercel.app'] 
