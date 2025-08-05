@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from './api';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface User {
   _id: string;
@@ -95,6 +96,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: !!user,
     loading,
   };
+
+  // Show loading screen while checking authentication
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <AuthContext.Provider value={value}>
