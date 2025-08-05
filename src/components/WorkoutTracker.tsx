@@ -1,8 +1,8 @@
 import { useAuth } from "../lib/auth";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +10,7 @@ import { Plus, Minus, Check, Timer, Weight, RotateCcw, Calendar, Target, Trendin
 import { useToast } from "../hooks/use-toast";
 import { sendNotification } from "../lib/notifications";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Skeleton from './ui/skeleton';
+import { Skeleton } from './ui/skeleton';
 import { CameraButton } from './ui/camera-button';
 import { addDays, format, isSameDay, subDays } from 'date-fns';
 import { apiService } from '../lib/api';

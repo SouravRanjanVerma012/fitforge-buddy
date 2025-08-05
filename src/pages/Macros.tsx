@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Calculator, Target, TrendingUp, Activity, Zap, Save, Share2, Utensils, AlertTriangle, Info, Database, Download, FileText } from 'lucide-react';

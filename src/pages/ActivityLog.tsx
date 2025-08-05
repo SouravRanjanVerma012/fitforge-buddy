@@ -1,6 +1,6 @@
 import React from 'react';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, Target, Trophy, BarChart3, Download, Activity, Dumbbell, Zap, TrendingDown, Save, Database, FileText } from 'lucide-react';

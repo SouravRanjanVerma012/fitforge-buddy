@@ -1,14 +1,14 @@
-import Card from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Calendar, Award } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useEffect, useState, useRef } from "react";
 import { saveAs } from "file-saver";
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import * as htmlToImage from "html-to-image";
 import { useToast } from "../hooks/use-toast";
 import { useQuery } from '@tanstack/react-query';
-import Skeleton from './ui/skeleton';
+import { Skeleton } from './ui/skeleton';
 import { format } from "date-fns";
 import { apiService } from '../lib/api';
 
