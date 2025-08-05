@@ -64,36 +64,11 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      // Production domains
-      'https://fitforge-buddy-main.vercel.app',
-      'https://fitforge-buddy-main-ibpmkaymb-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-npj8ypwft-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-px5m218jy-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-gkkpiqmrl-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-3pwsnn8szhem4x7ldwthejqpm6tn-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-4gl97gjy6-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-gf85xf7x6-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-ew1pts72s-sourav2000ranjan-6852s-projects.vercel.app',
-      'https://fitforge-buddy-main-nunatye21-sourav2000ranjan-6852s-projects.vercel.app',
-      // Development domains
-      'http://localhost:8080',
-      'http://localhost:8081',
-      'http://localhost:8082',
-      'http://localhost:8083',
-      'http://localhost:8084',
-      'http://localhost:8085',
-      'http://localhost:8086',
-      'http://localhost:8087',
-      'http://localhost:8088',
-      'http://localhost:8089',
-      'http://localhost:8090'
-    ];
-    
-    // Check if origin is allowed - be more permissive for Vercel domains
-    if (allowedOrigins.indexOf(origin) !== -1 || 
-        origin.includes('vercel.app') || 
-        origin.includes('sourav2000ranjan-6852s-projects.vercel.app')) {
+    // Be very permissive for Vercel domains
+    if (origin.includes('vercel.app') || 
+        origin.includes('sourav2000ranjan-6852s-projects.vercel.app') ||
+        origin.includes('fitforge-buddy-main') ||
+        origin.includes('localhost')) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
