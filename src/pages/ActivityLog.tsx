@@ -12,13 +12,24 @@ import { apiService } from '../lib/api';
 import { useToast } from '../hooks/use-toast';
 import { pdfService, type WorkoutReportData } from '@/lib/pdfService';
 
-interface ActivityLogProps {}
+interface ActivityLogProps {
+  // Component props interface
+}
 
 export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activityDays, setActivityDays] = React.useState<'30' | '90'>('30');
   const [serverStatus, setServerStatus] = React.useState<'online' | 'offline' | 'checking'>('checking');
+
+  const getStatusColor = (status: 'online' | 'offline' | 'checking') => {
+    switch (status) {
+      case 'online': return 'text-green-600';
+      case 'offline': return 'text-red-600';
+      case 'checking': return 'text-yellow-600';
+      default: return 'text-gray-600';
+    }
+  };
 
   // Scroll to top when component mounts
   React.useEffect(() => {
@@ -70,26 +81,22 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { data: workoutsData, isLoading: workoutsLoading, error: workoutsError } = useQuery({
     queryKey: ['workouts', user?._id],
     queryFn: async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/workouts', {
-          headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
-          cache: 'no-store' // Disable browser cache
-        });
-        
-                     if (!res.ok) {
-               throw new Error(`Server error: ${res.status}`);
-             }
-        
-        const contentType = res.headers.get('content-type');
-                     if (!contentType || !contentType.includes('application/json')) {
-               throw new Error('Server returned non-JSON response');
-             }
-        
-        const data = await res.json();
-        return data;
-                 } catch (error) {
-             throw error;
-           }
+      const res = await fetch('http://localhost:5000/api/workouts', {
+        headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
+        cache: 'no-store' // Disable browser cache
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+      
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+      
+      const data = await res.json();
+      return data;
     },
     enabled: !!user?._id && !!apiService.getToken() && serverStatus === 'online',
     refetchOnMount: true,
@@ -525,7 +532,7 @@ For personal fitness tracking use only
                 <span className="text-xs text-gray-500">
                   Last updated: {lastUpdated}
                 </span>
-                <span className={`text-xs ${serverStatus === 'online' ? 'text-green-600' : serverStatus === 'offline' ? 'text-red-600' : 'text-yellow-600'}`}>
+                <span className={`text-xs ${getStatusColor(serverStatus)}`}>
                   Server: {serverStatus}
                 </span>
               </div>
@@ -679,7 +686,7 @@ For personal fitness tracking use only
                     <span className="font-medium text-gray-900">{activity.date}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={activity.type === 'workout' ? 'default' : 'secondary'} className="text-xs">
+                    <Badge className={`${activity.type === 'workout' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'} text-xs`}>
                       {activity.type === 'workout' ? '🏋️ Workout' : '😴 Rest'}
                     </Badge>
                     <span className="text-sm text-gray-600">{activity.summary}</span>

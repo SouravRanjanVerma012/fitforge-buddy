@@ -84,10 +84,11 @@ router.post('/settings', async (req, res) => {
 router.get('/export', async (req, res) => {
   try {
     const { format = 'json' } = req.query;
-    const user = await User.findById(req.user._id)
-      .populate('workouts')
-      .populate('formChecks')
-      .select('-password');
+    const user = await User.findById(req.user._id).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     let data;
     switch (format) {
@@ -96,12 +97,14 @@ router.get('/export', async (req, res) => {
           user: {
             name: user.name,
             email: user.email,
+            role: user.role,
+            profile: user.profile,
             stats: user.stats,
+            preferences: user.preferences,
             settings: user.settings,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
           },
-          workouts: user.workouts || [],
-          formChecks: user.formChecks || [],
           macroSummaries: user.macroSummaries || []
         };
         break;
@@ -112,12 +115,14 @@ router.get('/export', async (req, res) => {
           user: {
             name: user.name,
             email: user.email,
+            role: user.role,
+            profile: user.profile,
             stats: user.stats,
+            preferences: user.preferences,
             settings: user.settings,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
           },
-          workouts: user.workouts || [],
-          formChecks: user.formChecks || [],
           macroSummaries: user.macroSummaries || []
         };
         break;
@@ -128,12 +133,14 @@ router.get('/export', async (req, res) => {
           user: {
             name: user.name,
             email: user.email,
+            role: user.role,
+            profile: user.profile,
             stats: user.stats,
+            preferences: user.preferences,
             settings: user.settings,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
           },
-          workouts: user.workouts || [],
-          formChecks: user.formChecks || [],
           macroSummaries: user.macroSummaries || []
         };
         break;

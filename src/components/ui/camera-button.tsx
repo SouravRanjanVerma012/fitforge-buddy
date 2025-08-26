@@ -2,10 +2,18 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/ui/button";
 import { Camera } from "lucide-react";
 
+interface FormCheck {
+  id: string;
+  exerciseId: string;
+  exerciseName: string;
+  timestamp: string;
+  // Add other form check properties as needed
+}
+
 interface CameraButtonProps {
   exerciseId: string;
   exerciseName: string;
-  onFormCheckSaved?: (formCheck: any) => void;
+  onFormCheckSaved?: (formCheck: FormCheck) => void;
   className?: string;
 }
 

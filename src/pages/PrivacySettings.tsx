@@ -372,9 +372,7 @@ const Settings: React.FC = () => {
                     key={format}
                     onClick={() => exportData(format)}
                     disabled={exporting}
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 text-sm"
                   >
                     <Download className="h-4 w-4" />
                     Export {format.toUpperCase()}

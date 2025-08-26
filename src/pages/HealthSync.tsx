@@ -1486,10 +1486,10 @@ const HealthSync = () => {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">Sync History</h3>
-                              <Button className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1 text-sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Data
-                </Button>
+              <Button className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1 text-sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export Data
+              </Button>
             </div>
             
             <div className="space-y-3">
@@ -1522,10 +1522,10 @@ const HealthSync = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge variant={
-                      session.status === 'completed' ? 'default' :
-                      session.status === 'in-progress' ? 'secondary' :
-                      'destructive'
+                    <Badge className={
+                      session.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      session.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
                     }>
                       {session.status}
                     </Badge>
@@ -1603,9 +1603,10 @@ const HealthSync = () => {
             </Card>
           </div>
         )}
+      </div>
 
-        {/* Settings Modal */}
-        {showSettingsModal && (
+      {/* Settings Modal */}
+      {showSettingsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <Card className="p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-4">

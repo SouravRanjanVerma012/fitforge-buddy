@@ -5,37 +5,37 @@ import { AuthContextType, AuthProvider, AuthContext } from '../lib/auth';
 
 const TestAuthProvider: React.FC<{ value: Partial<AuthContextType>; children: React.ReactNode }> = ({ value, children }) => {
   const defaultValue: AuthContextType = {
-    token: value.token ?? null,
-    login: value.login ?? (() => {}),
+    user: value.user ?? null,
+    login: value.login ?? (async () => {}),
+    register: value.register ?? (async () => {}),
     logout: value.logout ?? (() => {}),
     isAuthenticated: value.isAuthenticated ?? false,
     role: value.role ?? null,
+    loading: value.loading ?? false,
   };
   return (
-    <AuthProvider>
-      <AuthContext.Provider value={defaultValue as AuthContextType}>
-        {children}
-      </AuthContext.Provider>
-    </AuthProvider>
+    <AuthContext.Provider value={defaultValue}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
 describe('App', () => {
   it('renders the dashboard when authenticated', () => {
     render(
-      <TestAuthProvider value={{ isAuthenticated: true, token: 'test', role: 'user' }}>
+      <TestAuthProvider value={{ isAuthenticated: true, role: 'user' }}>
         <App />
       </TestAuthProvider>
     );
-    expect(screen.getByText(/Welcome to FitBuddy!/i)).toBeInTheDocument();
+    expect(screen.getByText(/FitForge Buddy/i)).toBeInTheDocument();
   });
 
   it('redirects to login when not authenticated', () => {
     render(
-      <TestAuthProvider value={{ isAuthenticated: false, token: null, role: null }}>
+      <TestAuthProvider value={{ isAuthenticated: false, role: null }}>
         <App />
       </TestAuthProvider>
     );
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByText(/Email/i)).toBeInTheDocument();
   });
 }); 

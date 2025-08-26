@@ -5,7 +5,7 @@ import Button from '@/components/ui/button';
 import { saveAs } from 'file-saver';
 
 const CoachDashboard: React.FC = () => {
-  const { token, role } = useAuth();
+  const { role } = useAuth();
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,14 +23,12 @@ const CoachDashboard: React.FC = () => {
     if (role !== 'coach' && role !== 'admin') return;
     setLoading(true);
     setError(null);
-    fetch('/api/clients', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
+    fetch('/api/clients')
       .then(res => res.ok ? res.json() : Promise.reject('Failed to fetch clients'))
       .then(data => setClients(data.clients || []))
       .catch(e => setError(e.toString()))
       .finally(() => setLoading(false));
-  }, [token, role]);
+  }, [role]);
 
   const exportCSV = () => {
     let csv = 'Client,Date,Exercise,Set,Weight,Reps,Completed\n';
@@ -86,7 +84,6 @@ const CoachDashboard: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ note }),
       });

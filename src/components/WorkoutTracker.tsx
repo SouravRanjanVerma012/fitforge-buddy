@@ -525,7 +525,7 @@ export const WorkoutTracker = () => {
       const basePlan = workoutTemplates[level]?.[goal] || workoutTemplates.beginner.strength;
 
       // Adjust plan based on user-selected rest days
-      let adjustedPlan = { ...basePlan };
+      const adjustedPlan = { ...basePlan };
       daysOfWeek.forEach(day => {
         if (aiPreferences.restDays.includes(day)) {
           adjustedPlan[day] = [{ name: "Rest Day", sets: 0, reps: 0 }];
@@ -1178,7 +1178,9 @@ export const WorkoutTracker = () => {
       });
       setRecFeedbackSent(true);
       setTimeout(() => setRecFeedbackSent(false), 2000);
-    } catch {}
+    } catch (error) {
+      console.error('Error sending recommendation feedback:', error);
+    }
   };
 
   const seenNotesKey = 'seen_coach_notes';

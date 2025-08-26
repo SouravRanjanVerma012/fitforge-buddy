@@ -24,7 +24,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, addDays, subDays, isSameDay } from 'date-fns';
 import { useToast } from '../hooks/use-toast';
 
-interface WorkoutsProps {}
+interface WorkoutsProps {
+  // Component props interface
+}
 
 export const Workouts: React.FC<WorkoutsProps> = () => {
   const { user, logout } = useAuth();

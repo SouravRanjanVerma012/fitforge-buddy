@@ -60,24 +60,65 @@ const FormCheck = () => {
   const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
 
   // Camera functions
+  const checkCameraPermission = async () => {
+    try {
+      const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      return result.state;
+    } catch (error) {
+      console.log('Permission API not supported, will try direct access');
+      return 'unknown';
+    }
+  };
+
   const openCamera = async () => {
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not supported in this browser');
+      }
+
+      // Check if we're on HTTPS (required for camera access in most browsers)
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        toast({
+          title: 'HTTPS Required',
+          description: 'Camera access requires HTTPS. Please use localhost or enable HTTPS.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 1280 }, 
-          height: { ideal: 720 } 
+          height: { ideal: 720 },
+          facingMode: 'environment' // Prefer back camera on mobile
         },
         audio: true
       });
+      
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        setIsCameraOpen(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error accessing camera:', error);
+      
+      let errorMessage = 'Unable to access camera. Please check permissions.';
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Camera access denied. Please allow camera permissions in your browser settings.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No camera found on your device.';
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage = 'Camera access is not supported in this browser.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'Camera is already in use by another application.';
+      }
+      
       toast({
         title: 'Camera Error',
-        description: 'Unable to access camera. Please check permissions.',
+        description: errorMessage,
         variant: 'destructive',
       });
     }
@@ -264,7 +305,7 @@ const FormCheck = () => {
 
   // Filter and sort form checks
   useEffect(() => {
-    let filtered = formChecks.filter(check => {
+    const filtered = formChecks.filter(check => {
       const exerciseName = check.exerciseName || check.exercise || 'Unknown Exercise';
       const matchesSearch = exerciseName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesExercise = selectedExercise === "all" || exerciseName === selectedExercise;
@@ -761,7 +802,7 @@ const FormCheck = () => {
 
   const openVideoModal = async (formCheck: FormCheck) => {
     // Convert data URLs to blob URLs for better video playback
-    let processedFormCheck = { ...formCheck };
+    const processedFormCheck = { ...formCheck };
     
     if (formCheck.videoUrl && formCheck.videoUrl.startsWith('data:')) {
       try {
@@ -829,7 +870,7 @@ const FormCheck = () => {
       {/* Add New Form Check Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Camera Capture Card */}
-        <Card className="p-6 flex items-center gap-4 bg-gradient-to-br from-emerald-50 to-blue-50 border-emerald-200 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => { 
+        <Card className="p-6 flex items-center gap-4 bg-gradient-to-br from-emerald-50 to-blue-50 border-emerald-200 cursor-pointer hover:shadow-lg transition-shadow" onClick={async () => { 
           setShowAddModal(true); 
           setIsCameraOpen(true); 
           setNewLabel(""); 
@@ -838,6 +879,18 @@ const FormCheck = () => {
           setCapturedImage(null);
           setCurrentVideo(null);
           setIsRecording(false);
+          
+          // Check camera permission first
+          const permission = await checkCameraPermission();
+          if (permission === 'denied') {
+            toast({
+              title: 'Camera Permission Denied',
+              description: 'Please enable camera access in your browser settings and try again.',
+              variant: 'destructive',
+            });
+            return;
+          }
+          
           // Open camera immediately when modal opens
           setTimeout(() => openCamera(), 100);
         }}>
@@ -909,6 +962,30 @@ const FormCheck = () => {
                   className="w-full h-64 object-cover"
                   style={{ display: (capturedImage || currentVideo) ? 'none' : 'block' }}
                 />
+                {/* Camera troubleshooting help */}
+                {!videoRef.current?.srcObject && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
+                    <div className="text-center text-white p-4">
+                      <Camera className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                      <h4 className="text-lg font-semibold mb-2">Camera Not Connected</h4>
+                      <p className="text-sm text-gray-300 mb-4">
+                        Please allow camera access when prompted, or check your browser settings.
+                      </p>
+                      <div className="text-xs text-gray-400 space-y-1">
+                        <p>• Make sure you're using HTTPS or localhost</p>
+                        <p>• Check browser camera permissions</p>
+                        <p>• Ensure no other app is using the camera</p>
+                      </div>
+                      <Button 
+                        onClick={openCamera}
+                        className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <Camera className="h-4 w-4 mr-2" />
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 {/* Image preview */}
                 {captureMode === 'image' && capturedImage && (
                   <img src={capturedImage} alt="Captured" className="w-full h-64 object-cover rounded" />
@@ -1422,7 +1499,7 @@ const FormCheck = () => {
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-900">{check.exerciseName || check.exercise || 'Unknown Exercise'}</h3>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge className="bg-gray-100 text-gray-800 text-xs">
                     {new Date(check.timestamp).toLocaleDateString()}
                   </Badge>
                 </div>

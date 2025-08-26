@@ -99,7 +99,7 @@ export const DashboardHeader = ({ userName = "Athlete" }: DashboardHeaderProps) 
   // Calculate current streak (consecutive days with a workout up to today)
   const workoutDates = Array.from(new Set(workouts.map(w => (w.date || w.createdAt || '').slice(0, 10)))).sort((a, b) => b.localeCompare(a));
   let streak = 0;
-  let d = new Date();
+  const d = new Date();
   for (let i = 0; i < workoutDates.length; i++) {
     const dateStr = d.toISOString().slice(0, 10);
     if (workoutDates.includes(dateStr)) {

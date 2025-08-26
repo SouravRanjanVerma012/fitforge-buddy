@@ -24,7 +24,7 @@ import ActivityLog from "./pages/ActivityLog";
 import Workouts from "./pages/Workouts";
 // import HealthSync from "./pages/HealthSync";
 import Button from "./components/ui/button";
-import { Dumbbell, LogOut, Video, Activity, Menu, X, Calculator, Settings as SettingsIcon } from "lucide-react";
+import { Dumbbell, LogOut, Video, Activity, Menu, X, Calculator, Settings as SettingsIcon, BarChart3, Camera } from "lucide-react";
 import { apiService } from "./lib/api";
 
 const queryClient = new QueryClient({
@@ -41,6 +41,10 @@ const queryClient = new QueryClient({
   },
 });
 
+// Platform detection that works for both web and mobile
+const isWeb = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isMobile = !isWeb;
+
 // Route protection component
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { isAuthenticated, loading } = useAuth();
@@ -55,6 +59,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   return children;
 }
 
+// Universal navigation component that works on both web and mobile
 const NavBar = () => {
   const { isAuthenticated, role, logout, user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -62,10 +67,8 @@ const NavBar = () => {
   
   const handleLogout = () => {
     logout();
-    // The RequireAuth component will handle the redirect
   };
 
-  // Helper function to check if a link is active
   const isActiveLink = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -85,7 +88,7 @@ const NavBar = () => {
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation */}
           {isAuthenticated && (
             <div className="hidden md:flex items-center space-x-8">
               <a 
@@ -106,7 +109,7 @@ const NavBar = () => {
                     : 'text-gray-700 hover:text-primary'
                 }`}
               >
-                <Dumbbell className="h-4 w-4" />
+                <Activity className="h-4 w-4" />
                 Workouts
               </a>
               <a 
@@ -117,7 +120,7 @@ const NavBar = () => {
                     : 'text-gray-700 hover:text-primary'
                 }`}
               >
-                <Activity className="h-4 w-4" />
+                <BarChart3 className="h-4 w-4" />
                 Activity Log
               </a>
               <a 
@@ -131,30 +134,6 @@ const NavBar = () => {
                 <Calculator className="h-4 w-4" />
                 Macros
               </a>
-              {(role === 'coach' || role === 'admin') && (
-                <a 
-                  href="/coach" 
-                  className={`font-medium transition-colors ${
-                    isActiveLink('/coach') 
-                      ? 'text-primary border-b-2 border-primary pb-1' 
-                      : 'text-gray-700 hover:text-primary'
-                  }`}
-                >
-                  Coach Dashboard
-                </a>
-              )}
-              {role === 'admin' && (
-                <a 
-                  href="/admin" 
-                  className={`font-medium transition-colors ${
-                    isActiveLink('/admin') 
-                      ? 'text-primary border-b-2 border-primary pb-1' 
-                      : 'text-gray-700 hover:text-primary'
-                  }`}
-                >
-                  Admin Dashboard
-                </a>
-              )}
               <a 
                 href="/form-check" 
                 className={`font-medium transition-colors flex items-center gap-2 ${
@@ -163,9 +142,34 @@ const NavBar = () => {
                     : 'text-gray-700 hover:text-primary'
                 }`}
               >
-                <Video className="h-4 w-4" />
+                <Camera className="h-4 w-4" />
                 Form Check
               </a>
+              {role === 'coach' && (
+                <a 
+                  href="/coach-dashboard" 
+                  className={`font-medium transition-colors flex items-center gap-2 ${
+                    isActiveLink('/coach-dashboard') 
+                      ? 'text-primary border-b-2 border-primary pb-1' 
+                      : 'text-gray-700 hover:text-primary'
+                  }`}
+                >
+                  <Video className="h-4 w-4" />
+                  Coach Dashboard
+                </a>
+              )}
+              {role === 'admin' && (
+                <a 
+                  href="/admin-dashboard" 
+                  className={`font-medium transition-colors flex items-center gap-2 ${
+                    isActiveLink('/admin-dashboard') 
+                      ? 'text-primary border-b-2 border-primary pb-1' 
+                      : 'text-gray-700 hover:text-primary'
+                  }`}
+                >
+                  Admin Dashboard
+                </a>
+              )}
               <a 
                 href="/settings" 
                 className={`font-medium transition-colors flex items-center gap-2 ${
@@ -180,139 +184,151 @@ const NavBar = () => {
             </div>
           )}
 
-          {/* Mobile menu button */}
+          {/* User Menu */}
           {isAuthenticated && (
-            <div className="md:hidden">
-              <Button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                variant="ghost"
-                className="p-2"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </Button>
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700">{user?.name || user?.email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-gray-700 hover:text-primary transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Logout Button */}
-          {isAuthenticated && (
-            <Button 
-              onClick={handleLogout}
-              className="hidden md:flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-gray-700 hover:text-primary"
             >
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile menu dropdown */}
-      {isAuthenticated && mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <a 
-              href="/" 
-              className={`block px-3 py-2 font-medium transition-colors ${
-                isActiveLink('/') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              Home
-            </a>
-            <a 
-              href="/workouts" 
-              className={`flex px-3 py-2 font-medium transition-colors items-center gap-2 ${
-                isActiveLink('/workouts') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <Dumbbell className="h-4 w-4" />
-              Workouts
-            </a>
-            <a 
-              href="/activity-log" 
-              className={`flex px-3 py-2 font-medium transition-colors items-center gap-2 ${
-                isActiveLink('/activity-log') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <Activity className="h-4 w-4" />
-              Activity Log
-            </a>
-            <a 
-              href="/macros" 
-              className={`flex px-3 py-2 font-medium transition-colors items-center gap-2 ${
-                isActiveLink('/macros') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <Calculator className="h-4 w-4" />
-              Macros
-            </a>
-            {(role === 'coach' || role === 'admin') && (
-              <a 
-                href="/coach" 
-                className={`block px-3 py-2 font-medium transition-colors ${
-                  isActiveLink('/coach') 
-                    ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                    : 'text-gray-700 hover:text-primary'
-                }`}
-              >
-                Coach Dashboard
-              </a>
-            )}
-            {role === 'admin' && (
-              <a 
-                href="/admin" 
-                className={`block px-3 py-2 font-medium transition-colors ${
-                  isActiveLink('/admin') 
-                    ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                    : 'text-gray-700 hover:text-primary'
-                }`}
-              >
-                Admin Dashboard
-              </a>
-            )}
-            <a 
-              href="/form-check" 
-              className={`flex px-3 py-2 font-medium transition-colors items-center gap-2 ${
-                isActiveLink('/form-check') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <Video className="h-4 w-4" />
-              Form Check
-            </a>
-            <a 
-              href="/settings" 
-              className={`flex px-3 py-2 font-medium transition-colors items-center gap-2 ${
-                isActiveLink('/settings') 
-                  ? 'text-primary bg-primary/10 border-l-4 border-primary' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              <SettingsIcon className="h-4 w-4" />
-              Settings
-            </a>
-            <Button 
-              onClick={handleLogout}
-              className="w-full mt-4 flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </Button>
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && isAuthenticated && (
+          <div className="md:hidden bg-white border-t border-gray-200 py-4">
+            <div className="flex flex-col space-y-4 px-4">
+              <a 
+                href="/" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a 
+                href="/workouts" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/workouts') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Activity className="h-4 w-4" />
+                Workouts
+              </a>
+              <a 
+                href="/activity-log" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/activity-log') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BarChart3 className="h-4 w-4" />
+                Activity Log
+              </a>
+              <a 
+                href="/macros" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/macros') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Calculator className="h-4 w-4" />
+                Macros
+              </a>
+              <a 
+                href="/form-check" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/form-check') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Camera className="h-4 w-4" />
+                Form Check
+              </a>
+              {role === 'coach' && (
+                <a 
+                  href="/coach-dashboard" 
+                  className={`font-medium transition-colors flex items-center gap-2 ${
+                    isActiveLink('/coach-dashboard') 
+                      ? 'text-primary' 
+                      : 'text-gray-700 hover:text-primary'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Video className="h-4 w-4" />
+                  Coach Dashboard
+                </a>
+              )}
+              {role === 'admin' && (
+                <a 
+                  href="/admin-dashboard" 
+                  className={`font-medium transition-colors flex items-center gap-2 ${
+                    isActiveLink('/admin-dashboard') 
+                      ? 'text-primary' 
+                      : 'text-gray-700 hover:text-primary'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin Dashboard
+                </a>
+              )}
+              <a 
+                href="/settings" 
+                className={`font-medium transition-colors flex items-center gap-2 ${
+                  isActiveLink('/settings') 
+                    ? 'text-primary' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <SettingsIcon className="h-4 w-4" />
+                Settings
+              </a>
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">{user?.name || user?.email}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-1 text-gray-700 hover:text-primary transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
   );
 };
@@ -359,8 +375,8 @@ const AppContent = () => {
           <Route path="/leaderboard" element={<RequireAuth><Leaderboard /></RequireAuth>} />
           <Route path="/macros" element={<RequireAuth><Macros /></RequireAuth>} />
           <Route path="/friends" element={<RequireAuth><Friends /></RequireAuth>} />
-          <Route path="/coach" element={<RequireAuth><CoachDashboard /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+          <Route path="/coach-dashboard" element={<RequireAuth><CoachDashboard /></RequireAuth>} />
+          <Route path="/admin-dashboard" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
           <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
           <Route path="/help" element={<RequireAuth><Help /></RequireAuth>} />
           <Route path="/form-check" element={<RequireAuth><FormCheck /></RequireAuth>} />
@@ -371,7 +387,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      <FeedbackWidget />
+      {isWeb && <FeedbackWidget />}
     </BrowserRouter>
   );
 };

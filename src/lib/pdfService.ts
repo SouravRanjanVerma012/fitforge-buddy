@@ -22,7 +22,7 @@ export interface WorkoutReportData {
 }
 
 class PDFService {
-  private runwayApiKey = import.meta.env.VITE_RUNWAY_API_KEY;
+  private runwayApiKey = '';
 
   // Generate nutrition plan template
   async generateNutritionPlanPDF(data: NutritionPlanData): Promise<Blob> {
