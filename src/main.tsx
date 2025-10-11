@@ -5,7 +5,7 @@ import './index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { requestNotificationPermission } from './lib/notifications';
 import { sendNotification } from './lib/notifications';
-import * as Sentry from '@sentry/browser';
+// import * as Sentry from '@sentry/browser';
 
 // async function enableMocks() {
 //   if (import.meta.env.DEV) {
@@ -51,10 +51,10 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000); // every 10 minutes
 
-if (import.meta.env.PROD) {
-  Sentry.init({
-    dsn: 'https://your-sentry-dsn@sentry.io/project-id',
-    tracesSampleRate: 1.0,
-    environment: import.meta.env.MODE,
-  });
-}
+// if (import.meta.env.PROD) {
+//   Sentry.init({
+//     dsn: 'https://your-sentry-dsn@sentry.io/project-id',
+//     tracesSampleRate: 1.0,
+//     environment: import.meta.env.MODE,
+//   });
+// }

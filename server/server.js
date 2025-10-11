@@ -10,14 +10,14 @@ import formCheckRoutes from './routes/formCheck.js';
 import workoutPlanRoutes from './routes/workoutPlans.js';
 import currentWorkoutRoutes from './routes/currentWorkout.js';
 import userPreferenceRoutes from './routes/userPreferences.js';
-import bluetoothDeviceRoutes from './routes/bluetoothDevices.js';
+
 import userRoutes from './routes/users.js';
 import recommendationRoutes from './routes/recommendation.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB with better logging
 console.log('🔌 Attempting to connect to MongoDB...');
@@ -70,7 +70,7 @@ app.use('/api/form-check', formCheckRoutes);
 app.use('/api/workout-plans', workoutPlanRoutes);
 app.use('/api/current-workout', currentWorkoutRoutes);
 app.use('/api/user-preferences', userPreferenceRoutes);
-app.use('/api/bluetooth', bluetoothDeviceRoutes);
+
 app.use('/api/user', userRoutes);
 app.use('/api/recommendation', recommendationRoutes);
 

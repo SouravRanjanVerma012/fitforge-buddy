@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '../lib/apiUniversal';
+import { apiService } from '../lib/api';
 
 // Universal data hooks that work on both web and mobile
 
@@ -173,46 +173,7 @@ export const useFormChecks = () => {
   });
 };
 
-// Bluetooth device hooks
-export const useBluetoothDevices = () => {
-  return useQuery({
-    queryKey: ['bluetoothDevices'],
-    queryFn: async () => {
-      return await apiService.getBluetoothDevices();
-    },
-    enabled: apiService.isAuthenticated(),
-  });
-};
 
-export const useDeviceHealthData = (deviceId: string, startDate?: string, endDate?: string, limit?: number) => {
-  return useQuery({
-    queryKey: ['deviceHealthData', deviceId, startDate, endDate, limit],
-    queryFn: async () => {
-      return await apiService.getDeviceHealthData(deviceId, startDate, endDate, limit);
-    },
-    enabled: apiService.isAuthenticated() && !!deviceId,
-  });
-};
-
-export const useDeviceSyncHistory = (deviceId: string, limit?: number) => {
-  return useQuery({
-    queryKey: ['deviceSyncHistory', deviceId, limit],
-    queryFn: async () => {
-      return await apiService.getDeviceSyncHistory(deviceId, limit);
-    },
-    enabled: apiService.isAuthenticated() && !!deviceId,
-  });
-};
-
-export const useAllSyncSessions = (limit?: number) => {
-  return useQuery({
-    queryKey: ['allSyncSessions', limit],
-    queryFn: async () => {
-      return await apiService.getAllSyncSessions(limit);
-    },
-    enabled: apiService.isAuthenticated(),
-  });
-};
 
 // Mutation hooks
 export const useSaveWorkout = () => {
@@ -402,79 +363,7 @@ export const useAssignWorkoutToClient = () => {
   });
 };
 
-// Bluetooth device mutations
-export const usePairBluetoothDevice = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (deviceData: {
-      deviceId: string;
-      deviceName: string;
-      deviceType?: string;
-      brand: string;
-      model: string;
-      macAddress?: string;
-      firmwareVersion?: string;
-    }) => {
-      return await apiService.pairBluetoothDevice(deviceData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bluetoothDevices'] });
-    },
-  });
-};
 
-export const useUpdateDeviceStatus = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ deviceId, status }: {
-      deviceId: string;
-      status: {
-        isConnected: boolean;
-        batteryLevel?: number;
-        signalStrength?: number;
-      };
-    }) => {
-      return await apiService.updateDeviceStatus(deviceId, status);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bluetoothDevices'] });
-    },
-  });
-};
-
-export const useUnpairDevice = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (deviceId: string) => {
-      return await apiService.unpairDevice(deviceId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bluetoothDevices'] });
-    },
-  });
-};
-
-export const useSyncDeviceData = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ deviceId, healthData, syncType }: {
-      deviceId: string;
-      healthData: any[];
-      syncType?: 'full' | 'incremental';
-    }) => {
-      return await apiService.syncDeviceData(deviceId, healthData, syncType);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deviceHealthData'] });
-      queryClient.invalidateQueries({ queryKey: ['deviceSyncHistory'] });
-      queryClient.invalidateQueries({ queryKey: ['allSyncSessions'] });
-    },
-  });
-};
 
 // Authentication mutations
 export const useLogin = () => {
@@ -506,30 +395,4 @@ export const useRegister = () => {
   });
 };
 
-// Utility hooks for offline status
-export const useOfflineStatus = () => {
-  return useQuery({
-    queryKey: ['offlineStatus'],
-    queryFn: async () => {
-      // This would be implemented to check network status
-      return navigator.onLine;
-    },
-    refetchInterval: 5000, // Check every 5 seconds
-  });
-};
 
-// Hook for syncing offline data
-export const useSyncOfflineData = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async () => {
-      // This would trigger the sync process
-      return true;
-    },
-    onSuccess: () => {
-      // Invalidate all queries to refresh data
-      queryClient.invalidateQueries();
-    },
-  });
-}; 
