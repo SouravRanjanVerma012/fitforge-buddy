@@ -1319,12 +1319,12 @@ export const WorkoutTracker = () => {
                   className="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md transition-colors"
                   disabled={planLoading}
                 >
-                  <span className="mr-1">{planLoading ? '⏳' : '🔄'}</span>
-                  {planLoading ? 'Loading...' : 'Refresh'}
+                  <span className="mr-0">{planLoading ? '⏳' : '🔄'}</span>
+                  {planLoading ? 'Loading...' : ''}
                 </Button>
                 <Button 
                   onClick={() => setShowAIModal(true)} 
-                  className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-2 border-purple-800 rounded-md transition-colors font-semibold shadow-sm"
+                  className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-2 border-purple-500 rounded-md transition-colors font-semibold shadow-sm"
                   style={{ position: 'relative', zIndex: 10 }}
                 >
                   <Sparkles className="h-3 w-3 mr-1" />

@@ -247,7 +247,7 @@ const Settings: React.FC = () => {
                             onClick={() => toggleWorkoutDay(key)}
                             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                               settings.workoutReminderDays.includes(key)
-                                ? 'bg-primary text-white'
+                                ? 'bg-primary text-black'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                           >

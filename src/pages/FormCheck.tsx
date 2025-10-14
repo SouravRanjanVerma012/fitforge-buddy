@@ -962,7 +962,7 @@ const FormCheck = () => {
                   className="w-full h-64 object-cover"
                   style={{ display: (capturedImage || currentVideo) ? 'none' : 'block' }}
                 />
-                {/* Camera troubleshooting help */}
+                {/* Camera troubleshooting help
                 {!videoRef.current?.srcObject && (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
                     <div className="text-center text-white p-4">
@@ -985,7 +985,7 @@ const FormCheck = () => {
                       </Button>
                     </div>
                   </div>
-                )}
+                )} */}
                 {/* Image preview */}
                 {captureMode === 'image' && capturedImage && (
                   <img src={capturedImage} alt="Captured" className="w-full h-64 object-cover rounded" />
