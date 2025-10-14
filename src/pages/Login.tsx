@@ -1,123 +1,164 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useAuth } from "../lib/auth";
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
+    setLoading(true);
+    setError('');
+    
     try {
-      const result = await login(email, password);
-      if (result.success) {
-        toast({
-          title: "Welcome back!",
-          description: "Successfully logged in to FitForge Buddy.",
-        });
-        navigate('/');
-      } else {
-        toast({
-          title: "Login failed",
-          description: result.error || "Please check your credentials and try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      console.log('Attempting login with email:', email);
+      
+      // Use the auth context login function
+      await login(email, password);
+      
+      // Redirect to home page using React Router
+      navigate("/");
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your FitForge Buddy account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">
-              Sign up
-            </Link>
+    <div style={{ backgroundColor: 'hsl(0, 0%, 96%)', minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '40px', alignItems: 'center', minHeight: 'calc(100vh - 40px)' }}>
+          {/* Left Column - Welcome Section */}
+          <div style={{ flex: 1, textAlign: 'center', padding: '20px' }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '20px', lineHeight: '1.2' }}>
+              Welcome to <br />
+              <span style={{ color: '#fd7e14' }}>FitForge Buddy</span>
+            </h1>
+            <p style={{ color: 'hsl(217, 10%, 50.8%)', fontSize: '1.1rem', lineHeight: '1.6' }}>
+              Your personal fitness companion. Track workouts, monitor progress, and achieve your fitness goals with our comprehensive platform designed to support your journey to a healthier lifestyle.
+            </p>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Right Column - Login Form */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ 
+              backgroundColor: 'white', 
+              borderRadius: '10px', 
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', 
+              padding: '40px', 
+              width: '100%', 
+              maxWidth: '400px' 
+            }}>
+              <h2 style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '30px' }}>Login</h2>
+              
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                      fontSize: '16px'
+                    }}
+                  />
+                </div>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                      fontSize: '16px'
+                    }}
+                  />
+                </div>
+
+                {error && (
+                  <div style={{ 
+                    color: '#dc3545', 
+                    fontSize: '14px', 
+                    textAlign: 'center', 
+                    padding: '10px', 
+                    backgroundColor: '#f8d7da', 
+                    borderRadius: '5px', 
+                    marginBottom: '20px' 
+                  }}>
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: '#fd7e14',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    opacity: loading ? 0.7 : 1,
+                    marginBottom: '20px'
+                  }}
+                >
+                  {loading ? 'Logging in...' : 'Login'}
+                </button>
+              </form>
+
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <p style={{ marginBottom: '15px', color: '#666' }}>or login with:</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                  <button style={{ background: 'none', border: 'none', color: '#1877f2', fontSize: '20px', cursor: 'pointer' }}>
+                    <i className="fab fa-facebook-f"></i>
+                  </button>
+                  <button style={{ background: 'none', border: 'none', color: '#1da1f2', fontSize: '20px', cursor: 'pointer' }}>
+                    <i className="fab fa-twitter"></i>
+                  </button>
+                  <button style={{ background: 'none', border: 'none', color: '#db4437', fontSize: '20px', cursor: 'pointer' }}>
+                    <i className="fab fa-google"></i>
+                  </button>
+                  <button style={{ background: 'none', border: 'none', color: '#333', fontSize: '20px', cursor: 'pointer' }}>
+                    <i className="fab fa-github"></i>
+                  </button>
+                </div>
+              </div>
+
+                              <div style={{ textAlign: 'center' }}>
+                  <p style={{ color: '#666' }}>
+                    Don&apos;t have an account? <a href="/signup" style={{ color: '#fd7e14', textDecoration: 'none' }}>Sign up</a>
+                  </p>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -4,8 +4,7 @@ class ApiService {
   private token: string | null;
 
   constructor() {
-    // Use environment variable for API URL, fallback to localhost for development
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    this.baseURL = 'https://fitbuddy-backend-l3r0.onrender.com/api';
     this.token = localStorage.getItem('token');
   }
 
@@ -328,6 +327,89 @@ class ApiService {
 
   async exportUserData(format: string): Promise<any> {
     return this.request<any>(`/user/export?format=${format}`);
+  }
+
+  // Workout analytics
+  async getWorkoutAnalytics(startDate?: string, endDate?: string): Promise<any> {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    return this.request<any>(`/workouts/analytics?${params.toString()}`);
+  }
+
+  // Macro data
+  async getMacroData(date?: string): Promise<any> {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    return this.request<any>(`/macros?${params.toString()}`);
+  }
+
+  async saveMacroData(macroData: any): Promise<any> {
+    return this.request<any>('/macros', {
+      method: 'POST',
+      body: JSON.stringify(macroData),
+    });
+  }
+
+  // Friends
+  async getFriends(): Promise<any[]> {
+    return this.request<any[]>('/friends');
+  }
+
+  async getFriendRequests(): Promise<any[]> {
+    return this.request<any[]>('/friends/requests');
+  }
+
+  async sendFriendRequest(friendId: string): Promise<any> {
+    return this.request<any>('/friends/request', {
+      method: 'POST',
+      body: JSON.stringify({ friendId }),
+    });
+  }
+
+  async acceptFriendRequest(requestId: string): Promise<any> {
+    return this.request<any>(`/friends/request/${requestId}/accept`, {
+      method: 'POST',
+    });
+  }
+
+  // Challenges
+  async getChallenges(): Promise<any[]> {
+    return this.request<any[]>('/challenges');
+  }
+
+  async createChallenge(challengeData: any): Promise<any> {
+    return this.request<any>('/challenges', {
+      method: 'POST',
+      body: JSON.stringify(challengeData),
+    });
+  }
+
+  async joinChallenge(challengeId: string): Promise<any> {
+    return this.request<any>(`/challenges/${challengeId}/join`, {
+      method: 'POST',
+    });
+  }
+
+  // Coach
+  async getCoachClients(): Promise<any[]> {
+    return this.request<any[]>('/coach/clients');
+  }
+
+  async assignWorkoutToClient(clientId: string, workoutData: any): Promise<any> {
+    return this.request<any>(`/coach/clients/${clientId}/assign-workout`, {
+      method: 'POST',
+      body: JSON.stringify(workoutData),
+    });
+  }
+
+  // Admin
+  async getAdminUsers(): Promise<any[]> {
+    return this.request<any[]>('/admin/users');
+  }
+
+  async getAdminAnalytics(): Promise<any> {
+    return this.request<any>('/admin/analytics');
   }
 }
 

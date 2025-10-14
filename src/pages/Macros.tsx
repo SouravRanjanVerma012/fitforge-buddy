@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Card from '@/components/ui/card';
+import Button from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Calculator, Target, TrendingUp, Activity, Zap, Save, Share2, Utensils, AlertTriangle, Info, Database, Download, FileText } from 'lucide-react';
@@ -380,7 +380,7 @@ const ResultsDisplay: React.FC<{ results: MacroResults }> = ({ results }) => {
       };
 
       // Save to backend
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts/macro-summary`, {
+      const response = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts/macro-summary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -520,7 +520,7 @@ For personal nutrition planning use only
   const handleSaveWorkoutProgress = async () => {
     try {
       // Fetch workout data to calculate progress summary
-      const workoutResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts`, {
+      const workoutResponse = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
         headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
         cache: 'no-store'
       });
@@ -601,7 +601,7 @@ For personal nutrition planning use only
       };
 
       // Save to backend
-              const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts/macro-summary`, {
+      const response = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts/macro-summary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -797,7 +797,7 @@ const Macros = () => {
   const { data: macroSummariesData } = useQuery({
     queryKey: ['macro-summaries'],
     queryFn: async () => {
-              const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts/macro-summaries`, {
+      const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts/macro-summaries', {
         headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
         cache: 'no-store'
       });

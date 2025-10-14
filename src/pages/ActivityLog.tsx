@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Card from '@/components/ui/card';
+import Button from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, Target, Trophy, BarChart3, Download, Activity, Dumbbell, Zap, TrendingDown, Save, Database, FileText } from 'lucide-react';
@@ -12,13 +12,24 @@ import { apiService } from '../lib/api';
 import { useToast } from '../hooks/use-toast';
 import { pdfService, type WorkoutReportData } from '@/lib/pdfService';
 
-interface ActivityLogProps {}
+interface ActivityLogProps {
+  // Component props interface
+}
 
 export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activityDays, setActivityDays] = React.useState<'30' | '90'>('30');
   const [serverStatus, setServerStatus] = React.useState<'online' | 'offline' | 'checking'>('checking');
+
+  const getStatusColor = (status: 'online' | 'offline' | 'checking') => {
+    switch (status) {
+      case 'online': return 'text-green-600';
+      case 'offline': return 'text-red-600';
+      case 'checking': return 'text-yellow-600';
+      default: return 'text-gray-600';
+    }
+  };
 
   // Scroll to top when component mounts
   React.useEffect(() => {
@@ -29,16 +40,16 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   React.useEffect(() => {
     const checkServerStatus = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts`, {
+        const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
           method: 'HEAD',
           headers: { 'Authorization': `Bearer ${apiService.getToken()}` }
         });
         setServerStatus(res.ok ? 'online' : 'offline');
-              } catch (error) {
-          setServerStatus('offline');
-        }
+      } catch (error) {
+        setServerStatus('offline');
+      }
     };
-    
+
     if (user?._id && apiService.getToken()) {
       checkServerStatus();
       // Check again every 30 seconds
@@ -52,7 +63,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { data: macroSummariesData } = useQuery({
     queryKey: ['macro-summaries', user?._id],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts/macro-summaries`, {
+      const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts/macro-summaries', {
         headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
         cache: 'no-store'
       });
@@ -70,26 +81,22 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { data: workoutsData, isLoading: workoutsLoading, error: workoutsError } = useQuery({
     queryKey: ['workouts', user?._id],
     queryFn: async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts`, {
-          headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
-          cache: 'no-store' // Disable browser cache
-        });
-        
-                     if (!res.ok) {
-               throw new Error(`Server error: ${res.status}`);
-             }
-        
-        const contentType = res.headers.get('content-type');
-                     if (!contentType || !contentType.includes('application/json')) {
-               throw new Error('Server returned non-JSON response');
-             }
-        
-        const data = await res.json();
-        return data;
-                 } catch (error) {
-             throw error;
-           }
+      const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
+        headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
+        cache: 'no-store' // Disable browser cache
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+
+      const data = await res.json();
+      return data;
     },
     enabled: !!user?._id && !!apiService.getToken() && serverStatus === 'online',
     refetchOnMount: true,
@@ -100,8 +107,8 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
     refetchIntervalInBackground: true, // Continue refetching even when tab is not active
     retry: (failureCount, error) => {
       // Don't retry if it's a server connection error
-      if (error.message.includes('Server returned non-JSON') || 
-          error.message.includes('Server error: 500')) {
+      if (error.message.includes('Server returned non-JSON') ||
+        error.message.includes('Server error: 500')) {
         return false;
       }
       return failureCount < 3;
@@ -110,13 +117,13 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
 
   const workouts = workoutsData?.workouts || [];
   const macroSummaries = macroSummariesData?.macroSummaries || [];
-  
+
   // Debug: Log workout data structure (temporary)
   if (workouts.length > 0) {
     console.log('Sample workout data:', workouts[0]);
     console.log('Total workouts:', workouts.length);
   }
-  
+
   const lastUpdated = new Date().toLocaleTimeString();
 
   // Calculate weekly progress
@@ -124,12 +131,12 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
     const now = new Date();
     const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
     const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
-    
+
     const weeklyWorkouts = workouts.filter((w: any) => {
       const workoutDate = new Date(w.date || w.createdAt || w.timestamp);
       return workoutDate >= startOfWeek && workoutDate <= endOfWeek;
     });
-    
+
     return {
       count: weeklyWorkouts.length,
       goal: 5,
@@ -144,12 +151,12 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + i * 7));
       const weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
-      
+
       const weekWorkouts = workouts.filter((w: any) => {
         const workoutDate = new Date(w.date || w.createdAt || w.timestamp);
         return workoutDate >= weekStart && workoutDate <= weekEnd;
       });
-      
+
       last4Weeks.push(weekWorkouts.length);
     }
     return last4Weeks;
@@ -159,37 +166,37 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const getActivityLog = (days: number = 30) => {
     const activities = [];
     const today = new Date();
-    
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
       const dayWorkouts = workouts.filter((w: any) => {
         const workoutDate = new Date(w.date || w.createdAt || w.timestamp);
         return workoutDate.toDateString() === date.toDateString();
       });
-      
+
       activities.push({
         date: date.toISOString().split('T')[0],
         type: dayWorkouts.length > 0 ? 'workout' : 'rest',
         summary: dayWorkouts.length > 0 ? `${dayWorkouts.length} workout(s)` : 'Rest day'
       });
     }
-    
+
     return activities;
   };
 
   // Calculate personal bests
   const getPersonalBests = () => {
     const exerciseStats: { [key: string]: { maxWeight: number; maxReps: number; exercise: string } } = {};
-    
+
     workouts.forEach((workout: any) => {
       // Use the correct session field from the workout data
       const exercises = workout.session || [];
-      
+
       exercises.forEach((exercise: any) => {
         if (!exerciseStats[exercise.name]) {
           exerciseStats[exercise.name] = { maxWeight: 0, maxReps: 0, exercise: exercise.name };
         }
-        
+
         const sets = exercise.sets || [];
         sets.forEach((set: any) => {
           if (set.weight > exerciseStats[exercise.name].maxWeight) {
@@ -201,7 +208,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
         });
       });
     });
-    
+
     const result = Object.values(exerciseStats).filter(pb => pb.maxWeight > 0 || pb.maxReps > 0);
     console.log('Personal Bests calculated:', result.length, 'exercises');
     return result;
@@ -210,12 +217,12 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   // Calculate detailed exercise progress
   const getExerciseProgress = () => {
     const exerciseProgress: { [key: string]: any } = {};
-    
+
     workouts.forEach((workout: any) => {
       // Use the correct session field from the workout data
       const exercises = workout.session || [];
       const workoutDate = new Date(workout.date || workout.createdAt || workout.timestamp);
-      
+
       exercises.forEach((exercise: any) => {
         if (!exerciseProgress[exercise.name]) {
           exerciseProgress[exercise.name] = {
@@ -235,46 +242,46 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
             consistency: 0
           };
         }
-        
+
         const progress = exerciseProgress[exercise.name];
         progress.totalWorkouts++;
         progress.lastSeen = workoutDate;
-        
+
         const sets = exercise.sets || [];
         sets.forEach((set: any) => {
           progress.totalSets++;
           progress.totalReps += set.reps || 0;
-          
+
           if (set.weight > progress.maxWeight) {
             progress.maxWeight = set.weight;
           }
           if (set.reps > progress.maxReps) {
             progress.maxReps = set.reps;
           }
-          
+
           progress.weightHistory.push({ weight: set.weight, date: workoutDate });
           progress.repHistory.push({ reps: set.reps, date: workoutDate });
         });
       });
     });
-    
+
     // Calculate averages and improvements
     Object.values(exerciseProgress).forEach((exercise: any) => {
       exercise.avgWeight = exercise.totalSets > 0 ? exercise.weightHistory.reduce((sum: number, h: any) => sum + h.weight, 0) / exercise.weightHistory.length : 0;
       exercise.avgReps = exercise.totalSets > 0 ? exercise.repHistory.reduce((sum: number, h: any) => sum + h.reps, 0) / exercise.repHistory.length : 0;
-      
+
       // Calculate improvement (comparing recent vs older performance)
       if (exercise.weightHistory.length >= 4) {
         const recent = exercise.weightHistory.slice(-2).reduce((sum: number, h: any) => sum + h.weight, 0) / 2;
         const older = exercise.weightHistory.slice(0, 2).reduce((sum: number, h: any) => sum + h.weight, 0) / 2;
         exercise.improvement = ((recent - older) / older) * 100;
       }
-      
+
       // Calculate consistency (how often you do this exercise)
       const daysSinceFirst = Math.ceil((new Date().getTime() - exercise.firstSeen.getTime()) / (1000 * 60 * 60 * 24));
       exercise.consistency = daysSinceFirst > 0 ? (exercise.totalWorkouts / daysSinceFirst) * 100 : 0;
     });
-    
+
     const result = Object.values(exerciseProgress).sort((a: any, b: any) => b.totalWorkouts - a.totalWorkouts);
     console.log('Exercise Progress calculated:', result.length, 'exercises');
     return result;
@@ -285,7 +292,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
     try {
       const date = new Date().toLocaleDateString();
       const time = new Date().toLocaleTimeString();
-      
+
       let content = `FITNESS WORKOUT DATA REPORT
 Generated on: ${date} at ${time}
 =====================================\n\n`;
@@ -365,11 +372,11 @@ Report generated by FitForge Buddy
 For personal fitness tracking use only
 =====================================`;
 
-      const blob = new Blob([content], { 
-        type: 'text/plain;charset=utf-8' 
+      const blob = new Blob([content], {
+        type: 'text/plain;charset=utf-8'
       });
       saveAs(blob, `workout-report-${new Date().toISOString().split('T')[0]}.txt`);
-      
+
       toast({
         title: "Workout Report Saved",
         description: "Human-readable workout report has been saved to your device.",
@@ -398,7 +405,7 @@ For personal fitness tracking use only
 
       const pdfBlob = await pdfService.generateWorkoutReportPDF(workoutData);
       saveAs(pdfBlob, `workout-report-${new Date().toISOString().split('T')[0]}.pdf`);
-      
+
       toast({
         title: "PDF Report Generated",
         description: "Beautiful workout report PDF has been saved to your device.",
@@ -424,7 +431,7 @@ For personal fitness tracking use only
         activity.summary
       ])
     ].map(row => row.join(',')).join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'activity-log.csv');
   };
@@ -473,7 +480,7 @@ For personal fitness tracking use only
           <div className="text-center space-y-4">
             <div className="text-red-500 text-xl font-semibold">Backend Server Offline</div>
             <div className="text-gray-600 max-w-md mx-auto">
-              Unable to connect to the backend server at http://localhost:5000. 
+              Unable to connect to the backend server at https://fitbuddy-backend-l3r0.onrender.com.
               Please ensure the backend server is running by:
               <ul className="text-left mt-2 space-y-1 text-sm">
                 <li>• Opening a terminal in the server directory</li>
@@ -481,8 +488,8 @@ For personal fitness tracking use only
                 <li>• Checking that the server is running on port 5000</li>
               </ul>
             </div>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Retry Connection
@@ -518,16 +525,17 @@ For personal fitness tracking use only
               <h1 className="text-3xl font-bold text-gray-900">Activity Log & Progress Report</h1>
               <div className="text-gray-600 flex items-center gap-2">
                 Track your fitness journey and detailed exercise progress
-                <span className="flex items-center gap-1 text-green-600 text-sm">
+                {/* <span className="flex items-center gap-1 text-green-600 text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   Live Updates
-                </span>
+                </span> */}
+
                 <span className="text-xs text-gray-500">
                   Last updated: {lastUpdated}
                 </span>
-                <span className={`text-xs ${serverStatus === 'online' ? 'text-green-600' : serverStatus === 'offline' ? 'text-red-600' : 'text-yellow-600'}`}>
+                {/* <span className={`text-xs ${getStatusColor(serverStatus)}`}>
                   Server: {serverStatus}
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
@@ -560,7 +568,7 @@ For personal fitness tracking use only
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">📊 Your Progress Report</h2>
               <p className="text-gray-600">
-                Welcome to your comprehensive progress analysis! Below you'll find detailed insights about your workout performance, 
+                Welcome to your comprehensive progress analysis! Below you'll find detailed insights about your workout performance,
                 exercise progress, and fitness journey. Scroll down to explore your personalized analytics.
               </p>
             </div>
@@ -657,14 +665,14 @@ For personal fitness tracking use only
                 <h3 className="text-xl font-bold text-gray-900">Activity Log</h3>
               </div>
               <div className="flex gap-2">
-                <Button 
-                  onClick={() => setActivityDays('30')} 
+                <Button
+                  onClick={() => setActivityDays('30')}
                   className={`text-xs px-3 py-1 rounded-full ${activityDays === '30' ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border border-purple-300'}`}
                 >
                   📅 Last 30 Days
                 </Button>
-                <Button 
-                  onClick={() => setActivityDays('90')} 
+                <Button
+                  onClick={() => setActivityDays('90')}
                   className={`text-xs px-3 py-1 rounded-full ${activityDays === '90' ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border border-purple-300'}`}
                 >
                   📅 Last 90 Days
@@ -679,7 +687,7 @@ For personal fitness tracking use only
                     <span className="font-medium text-gray-900">{activity.date}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={activity.type === 'workout' ? 'default' : 'secondary'} className="text-xs">
+                    <Badge className={`${activity.type === 'workout' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'} text-xs`}>
                       {activity.type === 'workout' ? '🏋️ Workout' : '😴 Rest'}
                     </Badge>
                     <span className="text-sm text-gray-600">{activity.summary}</span>
@@ -758,7 +766,7 @@ For personal fitness tracking use only
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
                       <div className="text-center">
                         <div className="text-lg font-bold text-indigo-600">{exercise.totalWorkouts}</div>
@@ -777,7 +785,7 @@ For personal fitness tracking use only
                         <div className="text-xs text-gray-600">Max Reps</div>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div className="text-sm font-medium text-gray-700 mb-1">Average Weight</div>
@@ -788,7 +796,7 @@ For personal fitness tracking use only
                         <div className="text-lg font-semibold text-gray-900">{exercise.avgReps.toFixed(1)}</div>
                       </div>
                     </div>
-                    
+
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Consistency</span>

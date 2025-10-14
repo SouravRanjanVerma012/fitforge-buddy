@@ -1,14 +1,14 @@
-import { Card } from "@/components/ui/card";
+import Card from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Calendar, Award } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useEffect, useState, useRef } from "react";
 import { saveAs } from "file-saver";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/button";
 import * as htmlToImage from "html-to-image";
 import { useToast } from "../hooks/use-toast";
 import { useQuery } from '@tanstack/react-query';
-import { Skeleton } from './ui/skeleton';
+import Skeleton from './ui/skeleton';
 import { format } from "date-fns";
 import { apiService } from '../lib/api';
 
@@ -17,7 +17,7 @@ export const ProgressChart = () => {
   const { data, isLoading, error } = useQuery<{ workouts: any[] }>({
     queryKey: ['workouts', user?._id],
     queryFn: async () => {
-              const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/workouts`, {
+              const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
           headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
           cache: 'no-store' // Disable browser cache
         });
@@ -160,7 +160,7 @@ export const ProgressChart = () => {
   // Calculate current streak (consecutive days with a workout up to today)
   const workoutDates = Array.from(new Set(workouts.map(w => (w.date || w.createdAt || '').slice(0, 10)))).sort((a, b) => b.localeCompare(a));
   let streak = 0;
-  let d = new Date();
+  const d = new Date();
   for (let i = 0; i < workoutDates.length; i++) {
     const dateStr = d.toISOString().slice(0, 10);
     if (workoutDates.includes(dateStr)) {

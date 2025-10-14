@@ -3,13 +3,10 @@ module.exports = {
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-    '^.+\\.(js|jsx)$': 'babel-jest',
-  },
-  globals: {
-    'ts-jest': {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
-    },
+    }],
+    '^.+\\.(js|jsx)$': 'babel-jest',
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {

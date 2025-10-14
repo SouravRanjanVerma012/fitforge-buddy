@@ -1,8 +1,8 @@
 import { useAuth } from "../lib/auth";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import Button from "@/components/ui/button";
+import Card from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +10,7 @@ import { Plus, Minus, Check, Timer, Weight, RotateCcw, Calendar, Target, Trendin
 import { useToast } from "../hooks/use-toast";
 import { sendNotification } from "../lib/notifications";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from './ui/skeleton';
+import Skeleton from './ui/skeleton';
 import { CameraButton } from './ui/camera-button';
 import { addDays, format, isSameDay, subDays } from 'date-fns';
 import { apiService } from '../lib/api';
@@ -113,7 +113,7 @@ export const WorkoutTracker = () => {
   // Test server connection
   const testServerConnection = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/health`);
+      const response = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/health');
       const data = await response.json();
       console.log('Server health check:', data);
       toast({
@@ -525,7 +525,7 @@ export const WorkoutTracker = () => {
       const basePlan = workoutTemplates[level]?.[goal] || workoutTemplates.beginner.strength;
 
       // Adjust plan based on user-selected rest days
-      let adjustedPlan = { ...basePlan };
+      const adjustedPlan = { ...basePlan };
       daysOfWeek.forEach(day => {
         if (aiPreferences.restDays.includes(day)) {
           adjustedPlan[day] = [{ name: "Rest Day", sets: 0, reps: 0 }];
@@ -1178,7 +1178,9 @@ export const WorkoutTracker = () => {
       });
       setRecFeedbackSent(true);
       setTimeout(() => setRecFeedbackSent(false), 2000);
-    } catch {}
+    } catch (error) {
+      console.error('Error sending recommendation feedback:', error);
+    }
   };
 
   const seenNotesKey = 'seen_coach_notes';
@@ -1317,12 +1319,12 @@ export const WorkoutTracker = () => {
                   className="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md transition-colors"
                   disabled={planLoading}
                 >
-                  <span className="mr-1">{planLoading ? '⏳' : '🔄'}</span>
-                  {planLoading ? 'Loading...' : 'Refresh'}
+                  <span className="mr-0">{planLoading ? '⏳' : '🔄'}</span>
+                  {planLoading ? 'Loading...' : ''}
                 </Button>
                 <Button 
                   onClick={() => setShowAIModal(true)} 
-                  className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-2 border-purple-800 rounded-md transition-colors font-semibold shadow-sm"
+                  className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-2 border-purple-500 rounded-md transition-colors font-semibold shadow-sm"
                   style={{ position: 'relative', zIndex: 10 }}
                 >
                   <Sparkles className="h-3 w-3 mr-1" />

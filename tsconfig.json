@@ -1,14 +1,22 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["../shared/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "../shared/*"
+      ]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
@@ -18,5 +26,6 @@
     "strictNullChecks": false,
     "jsx": "react-jsx",
     "esModuleInterop": true
-  }
+  },
+  // "extends": "expo/tsconfig.base"
 }
