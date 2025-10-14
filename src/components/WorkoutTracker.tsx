@@ -113,7 +113,7 @@ export const WorkoutTracker = () => {
   // Test server connection
   const testServerConnection = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/health');
+      const response = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/health');
       const data = await response.json();
       console.log('Server health check:', data);
       toast({

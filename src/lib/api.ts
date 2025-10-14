@@ -4,7 +4,7 @@ class ApiService {
   private token: string | null;
 
   constructor() {
-    this.baseURL = 'http://localhost:5000/api';
+    this.baseURL = 'https://fitbuddy-backend-l3r0.onrender.com/api';
     this.token = localStorage.getItem('token');
   }
 

@@ -40,7 +40,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   React.useEffect(() => {
     const checkServerStatus = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/workouts', {
+        const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
           method: 'HEAD',
           headers: { 'Authorization': `Bearer ${apiService.getToken()}` }
         });
@@ -63,7 +63,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { data: macroSummariesData } = useQuery({
     queryKey: ['macro-summaries', user?._id],
     queryFn: async () => {
-      const res = await fetch('http://localhost:5000/api/workouts/macro-summaries', {
+      const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts/macro-summaries', {
         headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
         cache: 'no-store'
       });
@@ -81,7 +81,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = () => {
   const { data: workoutsData, isLoading: workoutsLoading, error: workoutsError } = useQuery({
     queryKey: ['workouts', user?._id],
     queryFn: async () => {
-      const res = await fetch('http://localhost:5000/api/workouts', {
+      const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
         headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
         cache: 'no-store' // Disable browser cache
       });
@@ -480,7 +480,7 @@ For personal fitness tracking use only
           <div className="text-center space-y-4">
             <div className="text-red-500 text-xl font-semibold">Backend Server Offline</div>
             <div className="text-gray-600 max-w-md mx-auto">
-              Unable to connect to the backend server at http://localhost:5000.
+              Unable to connect to the backend server at https://fitbuddy-backend-l3r0.onrender.com.
               Please ensure the backend server is running by:
               <ul className="text-left mt-2 space-y-1 text-sm">
                 <li>• Opening a terminal in the server directory</li>

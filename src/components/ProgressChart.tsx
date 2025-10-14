@@ -17,7 +17,7 @@ export const ProgressChart = () => {
   const { data, isLoading, error } = useQuery<{ workouts: any[] }>({
     queryKey: ['workouts', user?._id],
     queryFn: async () => {
-              const res = await fetch('http://localhost:5000/api/workouts', {
+              const res = await fetch('https://fitbuddy-backend-l3r0.onrender.com/api/workouts', {
           headers: { 'Authorization': `Bearer ${apiService.getToken()}` },
           cache: 'no-store' // Disable browser cache
         });
