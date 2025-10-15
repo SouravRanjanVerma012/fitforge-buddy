@@ -9,24 +9,80 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, firebaseLogin } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
       console.log('Attempting registration with email:', email);
-      
+
       // Use the auth context register function
       await register(name, email, password);
-      
+
       // Redirect to home page after successful registration
       navigate("/");
     } catch (err: unknown) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await firebaseLogin('google');
+      navigate("/");
+    } catch (err: unknown) {
+      console.error('Google signup error:', err);
+      setError(err instanceof Error ? err.message : 'Google signup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await firebaseLogin('github');
+      navigate("/");
+    } catch (err: unknown) {
+      console.error('GitHub signup error:', err);
+      setError(err instanceof Error ? err.message : 'GitHub signup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await firebaseLogin('facebook');
+      navigate("/");
+    } catch (err: unknown) {
+      console.error('Facebook signup error:', err);
+      setError(err instanceof Error ? err.message : 'Facebook signup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTwitterLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await firebaseLogin('twitter');
+      navigate("/");
+    } catch (err: unknown) {
+      console.error('Twitter signup error:', err);
+      setError(err instanceof Error ? err.message : 'Twitter signup failed');
     } finally {
       setLoading(false);
     }
@@ -151,6 +207,68 @@ const Signup: React.FC = () => {
                   {loading ? 'Signing up...' : 'Sign Up'}
                 </button>
               </form>
+
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <p style={{ marginBottom: '15px', color: '#666' }}>or sign up with:</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                  <button
+                    onClick={handleFacebookLogin}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1877f2',
+                      fontSize: '20px',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  >
+                    <i className="fab fa-facebook-f"></i>
+                  </button>
+                  <button
+                    onClick={handleTwitterLogin}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1da1f2',
+                      fontSize: '20px',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  >
+                    <i className="fab fa-twitter"></i>
+                  </button>
+                  <button
+                    onClick={handleGoogleLogin}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#db4437',
+                      fontSize: '20px',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  >
+                    <i className="fab fa-google"></i>
+                  </button>
+                  <button
+                    onClick={handleGithubLogin}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#333',
+                      fontSize: '20px',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.7 : 1
+                    }}
+                  >
+                    <i className="fab fa-github"></i>
+                  </button>
+                </div>
+              </div>
 
               <div style={{ textAlign: 'center' }}>
                 <p style={{ color: '#666' }}>

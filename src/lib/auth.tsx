@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from './api';
+import { handleFirebaseAuth } from './firebaseAuth';
 
 export interface User {
   _id: string;
@@ -17,6 +18,7 @@ export interface AuthContextType {
   role: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  firebaseLogin: (provider: 'google' | 'github' | 'facebook' | 'twitter') => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -89,6 +91,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const firebaseLogin = async (provider: 'google' | 'github' | 'facebook' | 'twitter') => {
+    try {
+      const response = await handleFirebaseAuth(provider);
+      if (response.success) {
+        setUser(response.data);
+      } else {
+        throw new Error('Firebase authentication failed');
+      }
+    } catch (error) {
+      console.error('Firebase login error:', error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     apiService.logout();
     setUser(null);
@@ -100,6 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     role: user?.role || null,
     login,
     register,
+    firebaseLogin,
     logout,
     loading,
   };

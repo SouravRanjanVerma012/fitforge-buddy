@@ -5,6 +5,7 @@ class ApiService {
 
   constructor() {
     this.baseURL = 'https://fitbuddy-backend-l3r0.onrender.com/api';
+    // this.baseURL = 'http://localhost:5000/api'
     this.token = localStorage.getItem('token');
   }
 
@@ -109,6 +110,21 @@ class ApiService {
 
   async getCurrentUser() {
     const response = await this.request<{ user: any }>('/auth/me');
+    return {
+      success: true,
+      data: response.user,
+    };
+  }
+
+  async firebaseAuth(firebaseToken: string, provider: string, userData?: any) {
+    const response = await this.request<{ message: string; token: string; user: any }>('/auth/firebase', {
+      method: 'POST',
+      body: JSON.stringify({ firebaseToken, provider, userData }),
+    });
+
+    this.token = response.token;
+    localStorage.setItem('token', response.token);
+
     return {
       success: true,
       data: response.user,

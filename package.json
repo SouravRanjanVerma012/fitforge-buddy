@@ -60,6 +60,7 @@
     "express-rate-limit": "^7.5.1",
     "express-validator": "^7.2.1",
     "file-saver": "^2.0.5",
+    "firebase": "^12.4.0",
     "helmet": "^7.2.0",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
@@ -70,11 +71,9 @@
     "mongod": "^2.0.0",
     "mongoose": "^8.16.5",
     "multer": "^1.4.5-lts.1",
-
     "nodemon": "^3.1.10",
     "npm-run-all": "^4.1.5",
     "react": "^19.0.0",
-
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.0",
     "react-resizable-panels": "^2.1.3",
@@ -83,7 +82,6 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-
     "zod": "^3.23.8"
   },
   "devDependencies": {
