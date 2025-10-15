@@ -233,7 +233,7 @@ const Login: React.FC = () => {
                   >
                     <i className="fab fa-google"></i>
                   </button>
-                  <button
+                  {/* <button
                     onClick={handleGithubLogin}
                     disabled={loading}
                     style={{
@@ -246,7 +246,7 @@ const Login: React.FC = () => {
                     }}
                   >
                     <i className="fab fa-github"></i>
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
